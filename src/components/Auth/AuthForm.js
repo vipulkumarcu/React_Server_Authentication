@@ -1,8 +1,10 @@
 import { useState, useRef, useContext } from 'react';
 import AuthContext from "../../store/auth-context"
 import classes from './AuthForm.module.css';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 
 const AuthForm = () => {
+  const history = useHistory();
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
 
@@ -44,7 +46,6 @@ const AuthForm = () => {
     ).then ((res)=> {
       setIsAuthentacting((prevState) => !prevState);
       if (res.ok) {
-        // alert("Account Created Successfully!!");
         return res.json();
       } else {
         return res.json().then((data)=>{
@@ -56,8 +57,8 @@ const AuthForm = () => {
         })
       }
     }).then(data => {
-      // console.log(data);
       context.login(data.idToken);
+      history.replace("/");
     })
     .catch(err => {
       alert(err.message);
