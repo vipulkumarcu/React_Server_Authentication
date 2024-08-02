@@ -20,36 +20,45 @@ const AuthForm = () => {
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
 
-    if (isLogin){
+    let url;
 
+    if (isLogin){
+      url = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCG8XR7bL35PRRg8t-Kr03QdTp6fzuPtgA";
     } else {
-      fetch("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCG8XR7bL35PRRg8t-Kr03QdTp6fzuPtgA",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            email: enteredEmail,
-            password: enteredPassword,
-            returnSecureToken: true
-          }),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      ).then ((res)=> {
-        if (res.ok) {
-          alert("Account Created Successfully!!");
-          setIsAuthentacting((prevState) => !prevState);
-        } else {
-          return res.json().then((data)=>{
-            let errorMessage = "Signup Failed";
-            if (data && data.error && data.error.message) {
-              errorMessage = data.error.message;
-            }
-            alert(errorMessage);
-          })
-        }
-      })
+      url = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCG8XR7bL35PRRg8t-Kr03QdTp6fzuPtgA";
     }
+    fetch(url,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          email: enteredEmail,
+          password: enteredPassword,
+          returnSecureToken: true
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    ).then ((res)=> {
+      setIsAuthentacting((prevState) => !prevState);
+      if (res.ok) {
+        // alert("Account Created Successfully!!");
+        return res.json();
+      } else {
+        return res.json().then((data)=>{
+          let errorMessage = "Signup Failed";
+          if (data && data.error && data.error.message) {
+            errorMessage = data.error.message;
+          }
+          throw new Error(errorMessage);
+        })
+      }
+    }).then(data => {
+      console.log(data);
+    })
+    .catch(err => {
+      alert(err.message);
+    })
   }
 
   return (
@@ -70,7 +79,7 @@ const AuthForm = () => {
           />
         </div>
         <div className={classes.actions}>
-          {isAuthentacting ? "Sending Request..." : <button> {isLogin ? 'Login' : 'Create Account'} </button>}
+          {isAuthentacting ? <p> Sending Request... </p> : <button> {isLogin ? 'Login' : 'Create Account'} </button>}
           <button
             type='button'
             className={classes.toggle}
