@@ -8,16 +8,14 @@ import AuthContext from './store/auth-context';
 
 function App() {
   const context = useContext(AuthContext);
-  
+
   return (
     <Layout>
       <Switch>
         <Route path='/' exact>
           <HomePage />
         </Route>
-        {
-          !context.isLoggedIn && <Route path='/auth'> <AuthPage /> </Route>
-        }
+        { !context.isLoggedIn && <Route path='/auth'> <AuthPage /> </Route> }
         <Route path='/profile'>
         { context.isLoggedIn && <UserProfile /> }
         { !context.isLoggedIn && <Redirect to="/auth" /> }
